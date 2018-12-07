@@ -28,12 +28,22 @@ public class SearchController {
         ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
 
         if (searchType.equals("all")) {
-            jobs = JobData.findAll();
+            jobs = JobData.findByValue(searchTerm);
+            model.addAttribute("title", "Jobs with: " + searchTerm);
         } else {
             jobs = JobData.findByColumnAndValue(searchType, searchTerm);
+            model.addAttribute("title", "Jobs with " + ListController.columnChoices.get(searchType) + ": " + searchTerm);
         }
 
-        model.addAttribute("title", "Jobs with " + ListController.columnChoices.get(searchType) + ": " + searchTerm);
+        if (jobs.size() < 1) {
+            model.addAttribute("title", "No jobs found with " + ListController.columnChoices.get(searchType) + ": " + searchTerm);
+
+            if (searchType.equals("all")) {
+                model.addAttribute("title", "No jobs found with: " + searchTerm);
+            }
+        }
+
+
         model.addAttribute("jobs", jobs);
         model.addAttribute("columns", ListController.columnChoices);
         return "search";
